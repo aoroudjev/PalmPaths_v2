@@ -1,9 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:palm_paths_flutter/object_detection.dart';
-import 'dart:io' show Platform;
 
 void main() => runApp(const MyApp());
 
@@ -15,90 +10,98 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-        ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange),
       ),
-      home: const MyHome(),
+      home: const MainMenuScreen(),
     );
   }
 }
 
-class MyHome extends StatefulWidget {
-  const MyHome({super.key});
+class MainMenuScreen extends StatelessWidget {
+  const MainMenuScreen({super.key});
 
   @override
-  State<MyHome> createState() => _MyHomeState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFDAD3C1),
+      appBar: AppBar(
+        title: const Text('Main Menu'),
+        backgroundColor: Colors.black.withOpacity(0.5),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StartScreen()),
+                );
+              },
+              child: const Text(
+                  'Start',
+                  style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HistoryScreen()),
+                );
+              },
+              child: const Text(
+                'History',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Implement quit functionality
+                // For example: exit(0);
+              },
+              child: const Text(
+                'Quit',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomeState extends State<MyHome> {
-  final imagePicker = ImagePicker();
-
-  ObjectDetection? objectDetection;
-
-  Uint8List? image;
-
-  @override
-  void initState() {
-    super.initState();
-    objectDetection = ObjectDetection();
-  }
+class StartScreen extends StatelessWidget {
+  const StartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/images/tfl_logo.png'),
+        title: const Text('Start'),
         backgroundColor: Colors.black.withOpacity(0.5),
       ),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: (image != null) ? Image.memory(image!) : Container(),
-              ),
-            ),
-            SizedBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  if (Platform.isAndroid || Platform.isIOS)
-                    IconButton(
-                      onPressed: () async {
-                        final result = await imagePicker.pickImage(
-                          source: ImageSource.camera,
-                        );
-                        if (result != null) {
-                          image = objectDetection!.analyseImage(result.path);
-                          setState(() {});
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.camera,
-                        size: 64,
-                      ),
-                    ),
-                  IconButton(
-                    onPressed: () async {
-                      final result = await imagePicker.pickImage(
-                        source: ImageSource.gallery,
-                      );
-                      if (result != null) {
-                        image = objectDetection!.analyseImage(result.path);
-                        setState(() {});
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.photo,
-                      size: 64,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: const Center(
+        child: Text('Start Screen'),
+      ),
+    );
+  }
+}
+
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('History'),
+        backgroundColor: Colors.black.withOpacity(0.5),
+      ),
+      body: const Center(
+        child: Text('History Screen'),
       ),
     );
   }
