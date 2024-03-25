@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDAD3C1)),
       ),
       home: const MainMenuScreen(),
     );
@@ -32,38 +34,74 @@ class MainMenuScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StartScreen()),
-                );
-              },
-              child: const Text(
+            Image.asset(
+              'assets/images/hand_logo_large.png',
+              height: 350,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StartScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(200, 50), // Set specific width and height
+                ),
+                child: const Text(
                   'Start',
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(200, 50),
+                  backgroundColor: const Color(0xFF38383B)
+                ),
+                child: const Text(
+                  'Past Readings',
                   style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HistoryScreen()),
-                );
-              },
-              child: const Text(
-                'History',
-                style: TextStyle(fontSize: 20),
-              ),
+            const SizedBox(
+              height: 15,
             ),
-            ElevatedButton(
-              onPressed: () {
-                // Implement quit functionality
-                // For example: exit(0);
-              },
-              child: const Text(
-                'Quit',
-                style: TextStyle(fontSize: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(200, 50),
+                    backgroundColor: const Color(0xFF38383B)
+                ),
+                child: const Text(
+                  'Quit',
+                  style: TextStyle(fontSize: 30),
+                ),
               ),
             ),
           ],
