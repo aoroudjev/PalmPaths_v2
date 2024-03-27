@@ -74,11 +74,10 @@ class MainMenuScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(200, 50),
-                  backgroundColor: const Color(0xFF38383B)
                 ),
                 child: const Text(
-                  'Past Readings',
-                  style: TextStyle(fontSize: 20),
+                  'History',
+                  style: TextStyle(fontSize: 30),
                 ),
               ),
             ),
@@ -89,14 +88,10 @@ class MainMenuScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
-                  );
+                  exit(0);
                 },
                 style: ElevatedButton.styleFrom(
                     fixedSize: const Size(200, 50),
-                    backgroundColor: const Color(0xFF38383B)
                 ),
                 child: const Text(
                   'Quit',
