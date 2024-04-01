@@ -39,6 +39,7 @@ dependencies:
   camera: ^0.10.5+9
   image_picker: ^1.0.7
   image: ^4.1.7
+  exif: ^3.3.0
 
 dev_dependencies:
   flutter_test:
