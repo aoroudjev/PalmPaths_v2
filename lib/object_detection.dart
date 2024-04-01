@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
+
+
 
 class ObjectDetection {
   static const String _modelPath = 'assets/detect.tflite';
@@ -35,7 +38,7 @@ class ObjectDetection {
 
     log('Loading interpreter...');
     _interpreter =
-        await Interpreter.fromAsset(_modelPath, options: interpreterOptions);
+    await Interpreter.fromAsset(_modelPath, options: interpreterOptions);
   }
 
   Future<void> _loadLabels() async {
@@ -65,9 +68,9 @@ class ObjectDetection {
     // Creating matrix representation, [300, 300, 3]
     final imageMatrix = List.generate(
       imageInput.height,
-      (y) => List.generate(
+          (y) => List.generate(
         imageInput.width,
-        (x) {
+            (x) {
           final pixel = imageInput.getPixel(x, y);
           return [pixel.r/255.0, pixel.g/255.0, pixel.b/255.0]; // Normalize values for model input
         },
@@ -131,8 +134,8 @@ class ObjectDetection {
   }
 
   List<List<Object>> _runInference(
-    List<List<List<num>>> imageMatrix,
-  ) {
+      List<List<List<num>>> imageMatrix,
+      ) {
     log('Running inference...');
 
     // Set input tensor [1, 300, 300, 3]
