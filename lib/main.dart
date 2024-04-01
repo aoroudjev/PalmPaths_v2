@@ -1,11 +1,23 @@
 import 'dart:io';
-
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+import 'package:palm_paths_flutter/object_detector_widget.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  runApp(MaterialApp(
+    home: MyApp(camera: firstCamera),
+  ));
+}
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final CameraDescription camera;
+
+  const MyApp({super.key, required this.camera});
 
   @override
   Widget build(BuildContext context) {
@@ -14,13 +26,16 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDAD3C1)),
       ),
-      home: const MainMenuScreen(),
+      home: MainMenuScreen(camera: camera),  // Pass the camera to MainMenuScreen
     );
   }
 }
 
 class MainMenuScreen extends StatelessWidget {
-  const MainMenuScreen({super.key});
+
+  final CameraDescription camera;
+
+  const MainMenuScreen({super.key, required this.camera});
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +63,13 @@ class MainMenuScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const StartScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => LiveObjectDetection(camera: camera,)),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(200, 50), // Set specific width and height
+                  fixedSize: const Size(
+                      200, 50), // Set specific width and height
                 ),
                 child: const Text(
                   'Start',
@@ -69,7 +86,8 @@ class MainMenuScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const HistoryScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -91,7 +109,7 @@ class MainMenuScreen extends StatelessWidget {
                   exit(0);
                 },
                 style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(200, 50),
+                  fixedSize: const Size(200, 50),
                 ),
                 child: const Text(
                   'Quit',
