@@ -33,10 +33,7 @@ class _LiveObjectDetectionState extends State<LiveObjectDetection> {
       setState(() {});
 
       _controller!.startImageStream((CameraImage image) async {
-        // Here, you can process the image using your object detection logic
-        // For simplicity, this example does not include the actual object detection logic
-        // You would typically convert the CameraImage to a format your model expects,
-        // run the model, and then display the results
+      //   Process Image here
       });
     });
   }
