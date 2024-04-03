@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as image_lib;
+import 'package:palm_paths_flutter/image_utils.dart';
+
+import 'detector.dart';
 
 
 class LiveObjectDetection extends StatefulWidget {
@@ -15,13 +20,16 @@ class LiveObjectDetection extends StatefulWidget {
 class _LiveObjectDetectionState extends State<LiveObjectDetection> {
   CameraController? _controller;
   Future<void>? _initializeControllerFuture;
+  Uint8List? processedImageData;
+  bool isProcessing = false;
+  final detector = Detector();
 
   @override
   void initState() {
     super.initState();
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.low,
     );
 
     _initializeControllerFuture = _controller!.initialize().then((_) {
@@ -32,7 +40,25 @@ class _LiveObjectDetectionState extends State<LiveObjectDetection> {
       setState(() {});
 
       _controller!.startImageStream((CameraImage image) async {
-      //   Process Image here
+        if (isProcessing) return;
+
+        isProcessing = true;
+
+        try {
+          // Analyze image frame
+          final image_lib.Image? convertedImage = await convertCameraImageToImage(image);
+          final Uint8List? processedImage = detector.analyzeImage(convertedImage!);
+
+          setState(() {
+            processedImageData = processedImage;
+          });
+        } catch(e) {
+          if (kDebugMode) {
+            print(e);
+          }
+        } finally {
+          isProcessing = false;
+        }
       });
     });
   }
@@ -47,14 +73,23 @@ class _LiveObjectDetectionState extends State<LiveObjectDetection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Live Object Detection')),
+      appBar: AppBar(title: const Text('Live Object Detection')),
       // Wait until the controller is initialized before displaying the camera preview
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller!);
+            return Stack(
+              children: [
+                CameraPreview(_controller!),
+                if (processedImageData != null)
+                  Positioned.fill(
+                    child: Image.memory(processedImageData!, fit: BoxFit.cover),
+                  ),
+                // You can add more widgets here to overlay additional information
+              ],
+            );
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
