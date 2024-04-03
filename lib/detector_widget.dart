@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +6,7 @@ import 'package:flutter/material.dart';
 class LiveObjectDetection extends StatefulWidget {
   final CameraDescription camera;
 
-  const LiveObjectDetection({Key? key, required this.camera}) : super(key: key);
+  const LiveObjectDetection({super.key, required this.camera});
 
   @override
   _LiveObjectDetectionState createState() => _LiveObjectDetectionState();
@@ -58,7 +57,7 @@ class _LiveObjectDetectionState extends State<LiveObjectDetection> {
             return CameraPreview(_controller!);
           } else {
             // Otherwise, display a loading indicator.
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
