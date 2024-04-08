@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -120,7 +119,6 @@ class _DetectorServer {
 
   static const double confidence = 0.5;
   Interpreter? _interpreter;
-  List<String>? _labels;
 
   _DetectorServer(this._sendPort);
   final SendPort _sendPort;
@@ -140,7 +138,6 @@ class _DetectorServer {
         RootIsolateToken rootIsolateToken = command.args?[0] as RootIsolateToken;
         BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
         _interpreter = Interpreter.fromAddress(command.args?[1] as int);
-        _labels = command.args?[2] as List<String>;
         _sendPort.send(const _Command(_Codes.ready));
       case _Codes.detect:
         _sendPort.send(const _Command(_Codes.busy));
