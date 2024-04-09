@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-import 'package:palm_paths_flutter/detector_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
