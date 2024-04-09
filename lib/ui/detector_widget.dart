@@ -3,9 +3,11 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:palm_paths_flutter/detector_service.dart';
-import 'package:palm_paths_flutter/recognition.dart';
-import 'package:palm_paths_flutter/screen_params.dart';
+import 'package:palm_paths_flutter/service/detector_service.dart';
+import 'package:palm_paths_flutter/util/recognition.dart';
+import 'package:palm_paths_flutter/util/screen_params.dart';
+import 'package:palm_paths_flutter/ui/box_widget.dart';
+import 'package:palm_paths_flutter/ui/stats_widget.dart';
 
 
 class DetectorWidget extends StatefulWidget {
@@ -105,4 +107,42 @@ class _DetectorWidgetState extends State<DetectorWidget> with WidgetsBindingObse
     ),
   )
       : const SizedBox.shrink();
+
+  /// Returns Stack of bounding boxes
+  Widget _boundingBoxes() {
+    if (results == null) {
+      return const SizedBox.shrink();
+    }
+    return Stack(
+        children: results!.map((box) => BoxWidget(result: box)).toList());
+  }
+
+  /// Callback to receive each frame [CameraImage] perform inference on it
+  void onLatestImageAvailable(CameraImage cameraImage) async {
+    _detector?.processFrame(cameraImage);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.inactive:
+        _cameraController?.stopImageStream();
+        _detector?.stop();
+        _subscription?.cancel();
+        break;
+      case AppLifecycleState.resumed:
+        _initStateAsync();
+        break;
+      default:
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    _detector?.stop();
+    _subscription?.cancel();
+    super.dispose();
+  }
 }
