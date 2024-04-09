@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:palm_paths_flutter/screen_params.dart';
+import 'package:palm_paths_flutter/util/screen_params.dart';
 
 /// Represents the recognition output from the model
 class Recognition {

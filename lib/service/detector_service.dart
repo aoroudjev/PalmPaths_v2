@@ -6,8 +6,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as image_lib;
-import 'package:palm_paths_flutter/image_utils.dart';
-import 'package:palm_paths_flutter/recognition.dart';
+import 'package:palm_paths_flutter/util/image_utils.dart';
+import 'package:palm_paths_flutter/util/recognition.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 enum _Codes {

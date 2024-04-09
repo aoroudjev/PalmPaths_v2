@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:palm_paths_flutter/recognition.dart';
+import 'package:palm_paths_flutter/util/recognition.dart';
 
 /// Individual bounding box
 class BoxWidget extends StatelessWidget {

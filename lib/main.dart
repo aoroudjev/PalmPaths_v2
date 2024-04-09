@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:palm_paths_flutter/ui/detector_widget.dart';
 
 
 Future<void> main() async {
@@ -63,7 +64,7 @@ class MainMenuScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const StartScreen()),
+                        builder: (context) => const DetectorWidget()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
