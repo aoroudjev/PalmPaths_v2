@@ -1,101 +1,108 @@
 import 'dart:async';
+import 'dart:isolate';
+
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as image_lib;
-import 'package:palm_paths_flutter/image_utils.dart';
+import 'package:palm_paths_flutter/detector_service.dart';
+import 'package:palm_paths_flutter/recognition.dart';
+import 'package:palm_paths_flutter/screen_params.dart';
 
-import 'detector.dart';
 
-
-class LiveObjectDetection extends StatefulWidget {
-  final CameraDescription camera;
-
-  const LiveObjectDetection({super.key, required this.camera});
+class DetectorWidget extends StatefulWidget {
+  const DetectorWidget({super.key});
 
   @override
-  _LiveObjectDetectionState createState() => _LiveObjectDetectionState();
+  State<DetectorWidget> createState() => _DetectorWidgetState();
 }
 
-class _LiveObjectDetectionState extends State<LiveObjectDetection> {
-  CameraController? _controller;
-  Future<void>? _initializeControllerFuture;
-  Uint8List? processedImageData;
-  bool isProcessing = false;
-  final detector = Detector();
+class _DetectorWidgetState extends State<DetectorWidget> with WidgetsBindingObserver {
+
+  late List<CameraDescription> cameras;
+
+  CameraController? _cameraController;
+
+  get _controller => _cameraController;
+
+  /// Object Detector is running on a background [Isolate]. This is nullable
+  /// because acquiring a [Detector] is an asynchronous operation. This
+  /// value is `null` until the detector is initialized.
+  Detector? _detector;
+  StreamSubscription? _subscription;
+
+  /// Results to draw bounding boxes
+  List<Recognition>? results;
+
+  /// Realtime stats
+  Map<String, String>? stats;
 
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(
-      widget.camera,
-      ResolutionPreset.low,
-    );
+    WidgetsBinding.instance.addObserver(this);
+    _initStateAsync();
+  }
 
-    _initializeControllerFuture = _controller!.initialize().then((_) {
-      // Start the image stream after the controller is initialized
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
+  void _initStateAsync(){
+    // initialize preview and CameraImage stream
+    _initializeCamera();
 
-      _controller!.startImageStream((CameraImage image) async {
-        if (isProcessing) return;
+  }
 
-        isProcessing = true;
+  void _initializeCamera() async {
+    cameras = await availableCameras();
 
-        try {
-          // Analyze image frame
-          final image_lib.Image? convertedImage = await convertCameraImageToImage(image);
-          final Uint8List? processedImage = detector.analyzeImage(convertedImage!);
-
-          setState(() {
-            processedImageData = processedImage;
-          });
-        } catch(e) {
-          if (kDebugMode) {
-            print(e);
-          }
-        } finally {
-          isProcessing = false;
-        }
+    _cameraController = CameraController(
+      cameras[0],
+      ResolutionPreset.medium,
+      enableAudio: false,
+    )..initialize().then((_) async {
+      await _controller.startImageStream(onLatestImageAvailable);
+      setState(() {
+        ScreenParams.previewSize = _controller.value.previewSize!;
       });
     });
   }
-
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    _controller?.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Live Object Detection')),
-      // Wait until the controller is initialized before displaying the camera preview
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return Stack(
-              children: [
-                CameraPreview(_controller!),
-                if (processedImageData != null)
-                  Positioned.fill(
-                    child: Image.memory(processedImageData!, fit: BoxFit.cover),
-                  ),
-                // You can add more widgets here to overlay additional information
-              ],
-            );
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+    // Return empty container while the camera is not initialized
+    if (_cameraController == null || !_controller.value.isInitialized) {
+      return const SizedBox.shrink();
+    }
+
+    var aspect = 1 / _controller.value.aspectRatio;
+
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: aspect,
+          child: CameraPreview(_controller),
+        ),
+        // Stats
+        _statsWidget(),
+        // Bounding boxes
+        AspectRatio(
+          aspectRatio: aspect,
+          child: _boundingBoxes(),
+        ),
+      ],
     );
   }
+
+  Widget _statsWidget() => (stats != null)
+      ? Align(
+    alignment: Alignment.bottomCenter,
+    child: Container(
+      color: Colors.white.withAlpha(150),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: stats!.entries
+              .map((e) => StatsWidget(e.key, e.value))
+              .toList(),
+        ),
+      ),
+    ),
+  )
+      : const SizedBox.shrink();
 }
