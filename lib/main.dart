@@ -64,7 +64,7 @@ class MainMenuScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => LiveObjectDetection(camera: camera,)),
+                        builder: (context) => const StartScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
