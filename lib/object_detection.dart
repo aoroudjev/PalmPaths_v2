@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
